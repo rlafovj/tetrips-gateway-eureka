@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @Getter
 @ConfigurationProperties
-public class UriConfiguration {
+public class URIConfiguration {
   private String httpbin = "http://httpbin.org:80";
 }

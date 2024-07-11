@@ -1,6 +1,6 @@
 package kr.co.tetrips.gatewayservice.router;
 
-import kr.co.tetrips.gatewayservice.config.UriConfiguration;
+import kr.co.tetrips.gatewayservice.config.URIConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 @RestController
-@EnableConfigurationProperties(UriConfiguration.class)
+@EnableConfigurationProperties(URIConfiguration.class)
 public class GatewayRouter {
   @Bean
   public RouteLocator myRoutes(RouteLocatorBuilder builder) {

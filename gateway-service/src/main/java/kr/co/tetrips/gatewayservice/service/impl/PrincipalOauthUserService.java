@@ -26,39 +26,40 @@ public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAut
 
   @Override
   public Mono<OAuth2User> loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
-    return new DefaultReactiveOAuth2UserService()
-            .loadUser(userRequest)
-            .log()
-            .flatMap(user -> Mono.just(user.getAttributes()))
-            .flatMap(attributes ->
-                    Mono.just(userRequest.getClientRegistration().getClientName())
-                            .log()
-                            .flatMap(clientId -> Mono.just(Registration.getRegistration(clientId)))
-                            .flatMap(registration ->
-                                    Mono.just(OAuth2UserInfo.of(registration, attributes))
-                                            .flatMap(oAuth2UserInfo ->
-                                                    Mono.just(
-                                                                    User.builder()
-                                                                            .id(oAuth2UserInfo.id())//개선필요
-                                                                            .email(oAuth2UserInfo.email())
-                                                                            .name(oAuth2UserInfo.name())
-                                                                            .profile(oAuth2UserInfo.profile())
-                                                                            .roles(List.of(Role.USER))
-                                                                            .registration(registration)
-                                                                            .build()
-                                                            )
-                                                            .filterWhen(i ->
-                                                                    webClient.post()
-                                                                            .uri("lb://user-service/auth/oauth2/" + i.getRegistration().name().toLowerCase())
-                                                                            .accept(MediaType.APPLICATION_JSON)
-                                                                            .bodyValue(i)
-                                                                            .retrieve()
-                                                                            .bodyToMono(Boolean.class)
-                                                            )
-                                                            .flatMap(user -> Mono.just(new PrincipalUserDetails(user, attributes)))//개선 필요
-                                            )
-                            )
-            );
+    return null;
+//
+//    return new DefaultReactiveOAuth2UserService()
+//            .loadUser(userRequest)
+//            .log()
+//            .flatMap(user -> Mono.just(user.getAttributes()))
+//            .flatMap(attributes ->
+//                    Mono.just(userRequest.getClientRegistration().getClientName())
+//                            .log()
+//                            .flatMap(clientId -> Mono.just(Registration.getRegistration(clientId)))
+//                            .flatMap(registration ->
+//                                    Mono.just(OAuth2UserInfo.of(registration, attributes))
+//                                            .flatMap(oAuth2UserInfo ->
+//                                                    Mono.just(
+//                                                                    User.builder()
+//                                                                            .id(oAuth2UserInfo.id())//개선필요
+//                                                                            .email(oAuth2UserInfo.email())
+//                                                                            .name(oAuth2UserInfo.name())
+//                                                                            .profile(oAuth2UserInfo.profile())
+//                                                                            .roles(List.of(Role.USER))
+//                                                                            .registration(registration)
+//                                                                            .build()
+//                                                            )
+//                                                            .filterWhen(i ->
+//                                                                    webClient.post()
+//                                                                            .uri("lb://user-service/auth/oauth2/" + i.getRegistration().name().toLowerCase())
+//                                                                            .accept(MediaType.APPLICATION_JSON)
+//                                                                            .bodyValue(i)
+//                                                                            .retrieve()
+//                                                                            .bodyToMono(Boolean.class)
+//                                                            )
+//                                                            .flatMap(user -> Mono.just(new PrincipalUserDetails(user, attributes)))//개선 필요
+//                                            )
+//                            )
+//            );
   }
 }

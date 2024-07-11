@@ -29,8 +29,9 @@ public class WebSecurityConfig {
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
     return http
-            .authorizeExchange(authorize ->
-                    authorize.anyExchange().permitAll()
+            .authorizeExchange(authorize -> authorize
+                            .pathMatchers("/login/oauth2/code/**").authenticated()
+                            .anyExchange().permitAll()
             )
             .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             .httpBasic(i -> i.disable())

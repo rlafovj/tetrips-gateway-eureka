@@ -32,13 +32,13 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
   @Value("${jwt.secret}")
   private String secretKey;
 
-  @Value("${jwt.issuer}")
+  @Value("${jwt.iss}")
   private String issuer;
 
-  @Value("${jwt.expired.access}")
+  @Value("${jwt.acc-exp}")
   private long accessExpired;
 
-  @Value("${jwt.expired.refresh}")
+  @Value("${jwt.ref-exp}")
   private long refreshExpired;
 
   private SecretKey SECRET_KEY;

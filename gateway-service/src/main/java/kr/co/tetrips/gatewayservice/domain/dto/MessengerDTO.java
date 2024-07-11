@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessengerDTO {
+  private Long id;
   private String message;
   private int status;
   private Object data;
   private String accessToken;
   private String refreshToken;
-  private Long id;
 }

@@ -17,6 +17,12 @@ repositories {
   mavenCentral()
 }
 
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
+
 ext {
   set('springCloudVersion', "2023.0.2")
 }
