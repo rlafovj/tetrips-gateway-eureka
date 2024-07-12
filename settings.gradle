@@ -1,1 +1,5 @@
 rootProject.name = 'multi-module'
+include 'gateway-service'
+include 'user-service'
+include 'config-server'
+include 'eureka-server'
