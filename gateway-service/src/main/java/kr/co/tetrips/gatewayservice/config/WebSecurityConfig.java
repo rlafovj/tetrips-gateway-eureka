@@ -30,8 +30,13 @@ public class WebSecurityConfig {
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
     return http
             .authorizeExchange(authorize -> authorize
-                            .pathMatchers("/login/oauth2/code/**").authenticated()
-                            .anyExchange().permitAll()
+                            .pathMatchers(
+                                    ("/login/oauth2/code/**"),
+                                    ("/user/login/**"),
+                                    ("/user/signup/**"),
+                                    ("/error")
+                            ).permitAll()
+                            .anyExchange().permitAll()//.authenticated()
             )
             .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             .httpBasic(i -> i.disable())

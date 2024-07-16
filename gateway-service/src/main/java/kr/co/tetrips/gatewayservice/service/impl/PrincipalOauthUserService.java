@@ -1,14 +1,5 @@
 package kr.co.tetrips.gatewayservice.service.impl;
 
-import java.util.List;
-
-import kr.co.tetrips.gatewayservice.domain.model.OAuth2UserInfo;
-import kr.co.tetrips.gatewayservice.domain.model.PrincipalUserDetails;
-import kr.co.tetrips.gatewayservice.domain.model.User;
-import kr.co.tetrips.gatewayservice.domain.vo.Registration;
-import kr.co.tetrips.gatewayservice.domain.vo.Role;
-import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.userinfo.DefaultReactiveOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.ReactiveOAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;

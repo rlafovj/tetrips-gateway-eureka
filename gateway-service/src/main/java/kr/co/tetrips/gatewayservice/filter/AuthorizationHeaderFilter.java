@@ -3,9 +3,11 @@ package kr.co.tetrips.gatewayservice.filter;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import kr.co.tetrips.gatewayservice.domain.vo.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -56,6 +58,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
   public static class Config {
     private String headerName;
     private String headerValue;
+    private List<Role> roles;
   }
 
   @Override

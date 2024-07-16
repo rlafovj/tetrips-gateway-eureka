@@ -80,6 +80,8 @@ dependencies {
 
   // Redis
   implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+  // Config Server
+  implementation 'org.springframework.cloud:spring-cloud-starter-config'
 }
 
 dependencyManagement {

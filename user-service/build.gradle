@@ -56,6 +56,9 @@ dependencies {
   // 유레카
   implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+  // Config Server
+  implementation 'org.springframework.cloud:spring-cloud-starter-config'
+
 
 //    // JWT
 //    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.5'
