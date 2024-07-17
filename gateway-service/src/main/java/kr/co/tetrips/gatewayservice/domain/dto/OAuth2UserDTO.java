@@ -8,7 +8,7 @@ import java.util.Map;
 @Builder
 public record OAuth2UserDTO(
         String id,
-        String name,
+        String nickname,
         String email,
         String profile
 ) {
@@ -25,7 +25,7 @@ public record OAuth2UserDTO(
   private static OAuth2UserDTO ofGoogle(Map<String, Object> attributes) {
     return OAuth2UserDTO.builder()
             .id((String) attributes.get("sub"))
-            .name((String) attributes.get("name"))
+            .nickname((String) attributes.get("name"))
             .email((String) attributes.get("email"))
             .profile((String) attributes.get("picture"))
             .build();

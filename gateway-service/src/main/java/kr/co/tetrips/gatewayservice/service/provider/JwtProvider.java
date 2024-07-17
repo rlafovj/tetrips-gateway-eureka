@@ -2,6 +2,9 @@ package kr.co.tetrips.gatewayservice.service.provider;
 
 
 import jakarta.annotation.PostConstruct;
+import kr.co.tetrips.gatewayservice.domain.model.PrincipalUserDetails;
+import kr.co.tetrips.gatewayservice.domain.model.User;
+import kr.co.tetrips.gatewayservice.domain.vo.Role;
 import lombok.Getter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -62,7 +65,7 @@ public class JwtProvider {
 
   @SuppressWarnings("unchecked")
   public List<String> extractRoles(String jwt){
-    return extractClaim(jwt, i -> i.get("roles", List.class));
+    return extractClaim(jwt, i -> i.get("role", List.class));
   }
 
   public Mono<String> generateToken(UserDetails userDetails, boolean isRefreshToken){
@@ -79,7 +82,7 @@ public class JwtProvider {
             .claims(extraClaims)
             .subject(userDetails.getUsername())
             .issuer(issuer)
-            .claim("roles", userDetails.getAuthorities().stream().map(i -> i.getAuthority()).toList())
+            .claim("role", userDetails.getAuthorities().stream().map(i -> i.getAuthority()).toList())
             .claim("type", isRefreshToken ? "refresh" : "access")
             .issuedAt(Date.from(Instant.now()))
             .expiration(Date.from(Instant.now().plus(isRefreshToken ? refreshExpiredDate : accessExpiredDate, ChronoUnit.MILLIS)))
@@ -130,6 +133,9 @@ public class JwtProvider {
     }
   }
 
+  public String removeBearer(String bearerToken){
+    return bearerToken.replace("Bearer ", "");
+  }
 
   //For MVC
 //  public String extractTokenFromHeader(HttpServletRequest request) {
@@ -191,31 +197,28 @@ public class JwtProvider {
   }
 
 
-  public Boolean validateToken(String token, String subject) {
-    try {
-      return Stream.of(Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token))
-              .filter(i -> i.getPayload().getSubject().equals(subject))
-              .filter(i -> i.getPayload().getIssuer().equals(issuer))
-              .map(i -> true)
-              .findAny()
-              .orElseGet(() -> false);
-//    }catch (SignatureException e) {
-//      log.info("Invalid JWT signature.");
-//      log.trace("Invalid JWT signature trace: {}", e);
-//    } catch (MalformedJwtException e) {
-//      log.info("Invalid JWT token.");
-//      log.trace("Invalid JWT token trace: {}", e);
-//    } catch (ExpiredJwtException e) {
-//      log.info("Expired JWT token.");
-//      log.trace("Expired JWT token trace: {}", e);
-//    } catch (UnsupportedJwtException e) {
-//      log.info("Unsupported JWT token.");
-//      log.trace("Unsupported JWT token trace: {}", e);
-//    } catch (IllegalArgumentException e) {
-//      log.info("JWT token compact of handler are invalid.");
-//      log.trace("JWT token compact of handler are invalid trace: {}", e);
-    } catch (Exception e) {
-      return false;
-    }
+  public Boolean isTokenValid(String token, Boolean isRefreshToken) {
+    return !isTokenExpired(token) && isTokenTypeEqual(token, isRefreshToken);
+  }
+
+  public Mono<Boolean> isTokenInRedis(String token){
+    return reactiveValueOperations.get(token)
+            .flatMap(i -> Mono.just(i != null));
+  }
+
+  private Boolean isTokenExpired(String token){
+    return extractClaim(token, Claims::getExpiration).before(Date.from(Instant.now()));
+  }
+
+  private Boolean isTokenTypeEqual(String token, Boolean isRefreshToken){
+    return extractClaim(token, i -> i.get("type", String.class)).equals(isRefreshToken ? "refresh" : "access");
+  }
+
+  public PrincipalUserDetails extractPrincipalUserDetails(String jwt){
+    return new PrincipalUserDetails(User.builder().email(extractEmail(jwt)).role(extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList()).build());
+  }
+
+  public Mono<Boolean> removeTokenInRedis(String token){
+    return reactiveValueOperations.delete(token);
   }
 }

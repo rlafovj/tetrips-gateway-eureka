@@ -8,6 +8,7 @@ import java.util.List;
 import javax.crypto.SecretKey;
 
 import kr.co.tetrips.gatewayservice.domain.vo.Role;
+import kr.co.tetrips.gatewayservice.service.provider.JwtProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -29,29 +30,11 @@ import reactor.core.publisher.Mono;
 @Component
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<AuthorizationHeaderFilter.Config>{
 
-  private static final String BEARER = "Bearer ";
+  private final JwtProvider jwtTokenProvider;
 
-  @Value("${jwt.secret}")
-  private String secretKey;
-
-  @Value("${jwt.iss}")
-  private String issuer;
-
-  @Value("${jwt.acc-exp}")
-  private long accessExpired;
-
-  @Value("${jwt.ref-exp}")
-  private long refreshExpired;
-
-  private SecretKey SECRET_KEY;
-
-  public AuthorizationHeaderFilter() {
+  public AuthorizationHeaderFilter(JwtProvider jwtProvider){
     super(Config.class);
-  }
-
-  @PostConstruct
-  public void init(){
-    SECRET_KEY = Keys.hmacShaKeyFor(Base64.getUrlEncoder().encodeToString(secretKey.getBytes()).getBytes());
+    this.jwtTokenProvider = jwtProvider;
   }
 
   @Data
@@ -71,19 +54,22 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
       @SuppressWarnings("null")
       String token = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
 
-      if(token == null || token.startsWith(BEARER) == false)
-        return onError(exchange, HttpStatus.UNAUTHORIZED, "No Token or Invalid Token");
+      if(token == null)
+        return onError(exchange, HttpStatus.UNAUTHORIZED, "No Token");
 
-      String jwt = token.substring(BEARER.length());
+      String jwt = jwtTokenProvider.removeBearer(token);
 
-      try {
-        if (Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(jwt).getPayload().getExpiration().before(Date.from(Instant.now())))
-          return onError(exchange, HttpStatus.UNAUTHORIZED, "Token Expired");
-      } catch (Exception e) {
+      if(!jwtTokenProvider.isTokenValid(jwt, false))
         return onError(exchange, HttpStatus.UNAUTHORIZED, "Invalid Token");
+
+      List<Role> roles = jwtTokenProvider.extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList();
+
+      for(var i : config.getRoles()){
+        if(roles.contains(i))
+          return chain.filter(exchange);
       }
 
-      return chain.filter(exchange);
+      return onError(exchange, HttpStatus.UNAUTHORIZED, "No Permission");
     });
   }
 
