@@ -63,6 +63,10 @@ public class JwtProvider {
     return extractClaim(jwt, Claims::getSubject);
   }
 
+  public String extractNickname(String jwt){
+    return extractClaim(jwt, i -> i.get("nickname", String.class));
+  }
+
   @SuppressWarnings("unchecked")
   public List<String> extractRoles(String jwt){
     return extractClaim(jwt, i -> i.get("role", List.class));
@@ -84,6 +88,7 @@ public class JwtProvider {
             .issuer(issuer)
             .claim("role", userDetails.getAuthorities().stream().map(i -> i.getAuthority()).toList())
             .claim("type", isRefreshToken ? "refresh" : "access")
+            .claim("nickname", ((PrincipalUserDetails) userDetails).getUser().getNickname())
             .issuedAt(Date.from(Instant.now()))
             .expiration(Date.from(Instant.now().plus(isRefreshToken ? refreshExpiredDate : accessExpiredDate, ChronoUnit.MILLIS)))
             .signWith(SECRET_KEY, Jwts.SIG.HS256)
@@ -162,39 +167,39 @@ public class JwtProvider {
     return Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
   }
 
-  public Long getRefreshExpired() {
-    return Instant.now().plus(refreshExpiredDate, ChronoUnit.MILLIS).toEpochMilli();
-  }
-
-  public Boolean checkExpiration(String token){
-    return Stream.of(Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token))
-            .filter(i -> i.getPayload().getExpiration().after(Date.from(Instant.now())))
-            .map(i -> true)
-            .findAny()
-            .orElseGet(() -> false);
-  }
-
-  public String updateExpiration(String token){
-    return Stream.of(Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token))
-            .map(i -> Jwts.builder()
-                    .expiration(Date.from(Instant.now().plus(accessExpiredDate, ChronoUnit.MILLIS)))
-                    .compact())
-            .toString();
-
-  }
-
-  public String updateAccessToken(String oldToken){
-    String newToken = Jwts.builder()
-            .issuer(issuer)
-            .signWith(SECRET_KEY)
-            .expiration(Date.from(Instant.now().plus(accessExpiredDate, ChronoUnit.MILLIS)))
-            .subject("access")
-            .claim("userEmail", getPayload(oldToken).get("userEmail", String.class))
-            .claim("userId", getPayload(oldToken).get("userId", Long.class))
-            .compact();
-    log.info("발급된 새 엑세스토큰 : " + newToken);
-    return newToken;
-  }
+//  public Long getRefreshExpired() {
+//    return Instant.now().plus(refreshExpiredDate, ChronoUnit.MILLIS).toEpochMilli();
+//  }
+//
+//  public Boolean checkExpiration(String token){
+//    return Stream.of(Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token))
+//            .filter(i -> i.getPayload().getExpiration().after(Date.from(Instant.now())))
+//            .map(i -> true)
+//            .findAny()
+//            .orElseGet(() -> false);
+//  }
+//
+//  public String updateExpiration(String token){
+//    return Stream.of(Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token))
+//            .map(i -> Jwts.builder()
+//                    .expiration(Date.from(Instant.now().plus(accessExpiredDate, ChronoUnit.MILLIS)))
+//                    .compact())
+//            .toString();
+//
+//  }
+//
+//  public String updateAccessToken(String oldToken){
+//    String newToken = Jwts.builder()
+//            .issuer(issuer)
+//            .signWith(SECRET_KEY)
+//            .expiration(Date.from(Instant.now().plus(accessExpiredDate, ChronoUnit.MILLIS)))
+//            .subject("access")
+//            .claim("userEmail", getPayload(oldToken).get("userEmail", String.class))
+//            .claim("userId", getPayload(oldToken).get("userId", Long.class))
+//            .compact();
+//    log.info("발급된 새 엑세스토큰 : " + newToken);
+//    return newToken;
+//  }
 
 
   public Boolean isTokenValid(String token, Boolean isRefreshToken) {

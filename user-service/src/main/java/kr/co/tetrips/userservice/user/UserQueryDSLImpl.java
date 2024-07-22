@@ -1,6 +1,7 @@
 package kr.co.tetrips.userservice.user;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import kr.co.tetrips.userservice.user.domain.model.QUserModel;
 import kr.co.tetrips.userservice.user.domain.model.UserModel;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +14,7 @@ public class UserQueryDSLImpl implements UserQueryDSL{
 
   @Override
   public Optional<UserModel> findUserByEmail(String email) {
-    QUser qUser = QUser.user;
+    QUserModel qUser = QUserModel.userModel;
     return Optional.ofNullable(factory.selectFrom(qUser)
             .where(qUser.email.eq(email))
             .fetchFirst());
@@ -21,15 +22,15 @@ public class UserQueryDSLImpl implements UserQueryDSL{
 
   @Override
   public boolean existsByEmail(String email) {
-    QUser qUser = QUser.user;
-    return factory.selectFrom(QUser.user)
+    QUserModel qUser = QUserModel.userModel;
+    return factory.selectFrom(QUserModel.userModel)
             .where(qUser.email.eq(email))
             .fetchFirst() != null;
   }
 
   @Override
   public Long getUserIdByEmail(String email) {
-    QUser qUser = QUser.user;
+    QUserModel qUser = QUserModel.userModel;
     return Objects.requireNonNull(factory.selectFrom(qUser)
             .where(qUser.email.eq(email))
             .fetchFirst())

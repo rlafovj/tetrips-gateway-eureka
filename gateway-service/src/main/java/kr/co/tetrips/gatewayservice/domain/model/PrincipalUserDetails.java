@@ -1,6 +1,7 @@
 package kr.co.tetrips.gatewayservice.domain.model;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Getter
+@RequiredArgsConstructor
 public class PrincipalUserDetails implements UserDetails, OAuth2User {
   private User user;
   private Map<String, Object> attributes;

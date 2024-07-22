@@ -56,6 +56,21 @@ public class AuthServiceImpl implements AuthService{
                                                 // .httpOnly(true)
                                                 .build()
                                     )
+                                    .cookie(
+                                        ResponseCookie.from("username")
+                                                .value(jwtProvider.extractEmail(accessToken))
+                                                .maxAge(jwtProvider.getAccessExpiredDate())
+                                                .path("/")
+                                                // .httpOnly(true
+                                                .build()
+                                    ).cookie(
+                                        ResponseCookie.from("nickname")
+                                                .value(jwtProvider.extractNickname(accessToken))
+                                                .maxAge(jwtProvider.getAccessExpiredDate())
+                                                .path("/")
+                                                // .httpOnly(true
+                                                .build()
+                                        )
                                     .build()
                             )
                     )

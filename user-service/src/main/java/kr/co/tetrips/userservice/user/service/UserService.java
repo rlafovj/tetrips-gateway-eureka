@@ -1,5 +1,6 @@
 package kr.co.tetrips.userservice.user.service;
 
+import kr.co.tetrips.userservice.user.domain.dto.LoginResultDTO;
 import kr.co.tetrips.userservice.user.domain.model.UserModel;
 import kr.co.tetrips.userservice.user.domain.dto.UserDTO;
 import kr.co.tetrips.userservice.user.domain.dto.MessengerDTO;
@@ -27,6 +28,7 @@ public interface UserService {
             .build();
   }
   MessengerDTO signup(UserDTO param);
+  LoginResultDTO login(UserDTO param);
 
   MessengerDTO existsEmail(String email);
 }

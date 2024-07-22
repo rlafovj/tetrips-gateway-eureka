@@ -4,38 +4,41 @@ import kr.co.tetrips.gatewayservice.domain.dto.LoginDTO;
 import kr.co.tetrips.gatewayservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Mono;
 
-@RestController
-@RequestMapping("/auth")
+@Configuration
 @RequiredArgsConstructor
 public class AuthRouter {
   private final AuthService authService;
-  //private final AuthFilter authFilter; //= authService
 
+  //함수형 방식
   @Bean
-  RouterFunction<ServerResponse> authRoutes() {
+  public RouterFunction<ServerResponse> authRoutes() {
     return RouterFunctions.route()
-            .POST("/auth/login/local", req -> req.bodyToMono(LoginDTO.class).flatMap(authFilter::localLogin))
+            .path("/auth", builder -> builder
+                    .POST("/login/local", req -> req.bodyToMono(LoginDTO.class).flatMap(authService::localLogin))
+                    .POST("/refresh", req -> req.headers().header("Authorization").stream().findFirst().map(authService::refreshToken).orElseGet(authService::createResponseForEmpty))
+                    .POST("/logout", req -> req.headers().header("Authorization").stream().findFirst().map(authService::logout).orElseGet(authService::createResponseForEmpty))
+            )
             .build();
   }
 
-  @PostMapping("/login/local")
-  public Mono<ServerResponse> login(@RequestBody LoginDTO dto) {
-    return authService.localLogin(dto);
-  }
-
-  @PostMapping("/refresh")
-  public Mono<ServerResponse> refresh(@RequestHeader(name = "Authorization") String refreshToken) {
-    return authService.refreshToken(refreshToken).switchIfEmpty(authService.createResponseForEmpty());
-  }
-
-  @PostMapping("/logout")
-  public Mono<ServerResponse> logout(@RequestHeader(name = "Authorization") String refreshToken) {
-    return authService.logout(refreshToken);
-  }
+  //선언적 방식
+//  @PostMapping("/login/local")
+//  public Mono<ServerResponse> login(@RequestBody LoginDTO dto) {
+//    return authService.localLogin(dto);
+//  }
+//
+//  @PostMapping("/refresh")
+//  public Mono<ServerResponse> refresh(@RequestHeader(name = "Authorization") String refreshToken) {
+//    return authService.refreshToken(refreshToken).switchIfEmpty(authService.createResponseForEmpty());
+//  }
+//
+//  @PostMapping("/logout")
+//  public Mono<ServerResponse> logout(@RequestHeader(name = "Authorization") String refreshToken) {
+//    return authService.logout(refreshToken);
+//  }
 }
