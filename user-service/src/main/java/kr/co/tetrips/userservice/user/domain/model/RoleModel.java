@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import kr.co.tetrips.userservice.user.domain.vo.Role;
 
-@Entity
+@Entity(name = "ROLES")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

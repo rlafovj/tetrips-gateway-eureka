@@ -58,7 +58,12 @@ public class UserServiceImpl implements UserService {
                         .build())
                 .build()
                 :
-                null; //로그인 실패 로직 추가 필요
+                LoginResultDTO.builder()
+                        .user(UserDTO.builder()
+                                .email("Login Fail")
+                                .role(null)
+                                .build())
+                        .build();
     }
     //for MVC
 //    @Override

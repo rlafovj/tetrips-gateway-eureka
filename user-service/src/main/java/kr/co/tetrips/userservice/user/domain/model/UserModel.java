@@ -40,7 +40,7 @@ public class UserModel {
   private Registration registration;
 
   @Setter
-  @OneToMany(mappedBy = "userId", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+  @OneToMany(mappedBy = "userModel", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
   private List<RoleModel> roleId;
 
 }

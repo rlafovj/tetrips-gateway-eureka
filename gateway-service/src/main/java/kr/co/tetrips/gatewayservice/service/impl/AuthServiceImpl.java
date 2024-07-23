@@ -1,4 +1,5 @@
 package kr.co.tetrips.gatewayservice.service.impl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -17,6 +18,7 @@ import kr.co.tetrips.gatewayservice.service.provider.JwtProvider;
 import java.util.Collections;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService{
   private final WebClient webClient;
@@ -28,7 +30,7 @@ public class AuthServiceImpl implements AuthService{
         .log()
         .flatMap(i ->
             webClient.post()
-                .uri("lb://user-service/auth/login/local")
+                .uri("lb://USER/auth/login/local")
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(i)
                 .retrieve()
@@ -101,6 +103,7 @@ public class AuthServiceImpl implements AuthService{
 
   @Override
   public Mono<ServerResponse> logout(String refreshToken) {
+    log.info(">>> logout 진입");
     return Mono.just(refreshToken)
             .flatMap(i -> Mono.just(jwtProvider.removeBearer(refreshToken)))
             .filter(i -> jwtProvider.isTokenValid(refreshToken, true))
