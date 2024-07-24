@@ -16,6 +16,8 @@ import kr.co.tetrips.gatewayservice.service.AuthService;
 import kr.co.tetrips.gatewayservice.service.provider.JwtProvider;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -36,6 +38,7 @@ public class AuthServiceImpl implements AuthService{
                 .retrieve()
                 .bodyToMono(PrincipalUserDetails.class)
             )
+            .filter(i -> !Objects.equals(i.getUsername(), "Login Fail")) // email 값이 Login Fail 이 아닌 경우에만 토큰 생성 진행
             .flatMap(i ->
                 jwtProvider.generateToken(i, false)
                     .flatMap(accessToken ->
@@ -65,18 +68,25 @@ public class AuthServiceImpl implements AuthService{
                                                 .path("/")
                                                 // .httpOnly(true
                                                 .build()
-                                    ).cookie(
-                                        ResponseCookie.from("nickname")
-                                                .value(jwtProvider.extractNickname(accessToken))
-                                                .maxAge(jwtProvider.getAccessExpiredDate())
-                                                .path("/")
-                                                // .httpOnly(true
-                                                .build()
-                                        )
+                                    )
+//                                        .cookie(
+//                                        ResponseCookie.from("nickname")
+//                                                .value(jwtProvider.extractNickname(accessToken))
+//                                                .maxAge(jwtProvider.getAccessExpiredDate())
+//                                                .path("/")
+//                                                // .httpOnly(true
+//                                                .build()
+//                                    )
                                     .build()
                             )
                     )
-            );
+            )
+            .switchIfEmpty(Mono.defer(() -> {
+              String message = "Login Failed: email or password is incorrect";
+              return ServerResponse.status(HttpStatus.UNAUTHORIZED).build();
+//                      .contentType(MediaType.APPLICATION_JSON)
+//                      .body(BodyInserters.fromValue(Collections.singletonMap("message", message)));
+            }));
   }
 
   @Override
@@ -120,5 +130,20 @@ public class AuthServiceImpl implements AuthService{
               .contentType(MediaType.APPLICATION_JSON)
               .body(BodyInserters.fromValue(Collections.singletonMap("message", message)));
     });
+  }
+
+  @Override
+  public Mono<ServerResponse> getNickname(String accessToken) {
+    return Mono.just(accessToken)
+            .flatMap(i -> Mono.just(jwtProvider.removeBearer(accessToken)))
+            .filter(i -> jwtProvider.isTokenValid(accessToken, false))
+            .flatMap(i -> Mono.just(jwtProvider.extractEmail(i)))
+            .flatMap(i -> webClient.post()
+                    .uri("lb://USER/auth/getNickname")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .bodyValue(Collections.singletonMap("email", i))
+                    .retrieve()
+                    .bodyToMono(String.class)
+            ).flatMap(i -> ServerResponse.ok().body(BodyInserters.fromValue(Collections.singletonMap("nickname", i))));
   }
 }

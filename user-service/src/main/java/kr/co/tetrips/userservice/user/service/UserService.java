@@ -31,4 +31,6 @@ public interface UserService {
   LoginResultDTO login(UserDTO param);
 
   MessengerDTO existsEmail(String email);
+
+  String getNickname(UserDTO dtoOnlyEmail);
 }

@@ -136,4 +136,10 @@ public class UserServiceImpl implements UserService {
                         .status(409)//duplicate email
                         .build();
     }
+
+    @Override
+    public String getNickname(UserDTO dtoOnlyEmail) {
+        UserModel userModel = userRepository.findUserByEmail(dtoOnlyEmail.getEmail()).orElseGet(() -> UserModel.builder().build());
+        return userModel.getNickname();
+    }
 }

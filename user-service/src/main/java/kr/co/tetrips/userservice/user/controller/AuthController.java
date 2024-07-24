@@ -26,6 +26,12 @@ public class AuthController {
     return ResponseEntity.ok(userService.login(dto));
   }
 
+  @PostMapping("/getNickname")
+  public ResponseEntity<String> getNickname(@RequestBody UserDTO dtoOnlyEmail) {
+    log.info(">>> getNickname con 진입: {}", dtoOnlyEmail);
+    return ResponseEntity.ok(userService.getNickname(dtoOnlyEmail));
+  }
+
   @PostMapping("/signup")
   public ResponseEntity<MessengerDTO> signup(@RequestBody UserDTO dto) {
     log.info(">>> join con 진입: {}", dto);

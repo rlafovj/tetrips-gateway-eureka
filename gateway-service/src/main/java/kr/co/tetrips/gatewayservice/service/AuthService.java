@@ -9,4 +9,6 @@ public interface AuthService {
   Mono<ServerResponse> logout(String refreshToken);
   Mono<ServerResponse> refreshToken(String refreshToken);
   Mono<ServerResponse> createResponseForEmpty();
+
+  Mono<ServerResponse> getNickname(String accessToken);
 }
