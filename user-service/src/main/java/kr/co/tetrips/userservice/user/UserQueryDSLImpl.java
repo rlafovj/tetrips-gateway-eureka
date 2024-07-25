@@ -12,6 +12,7 @@ import java.util.Optional;
 public class UserQueryDSLImpl implements UserQueryDSL{
   private final JPAQueryFactory factory;
 
+
   @Override
   public Optional<UserModel> findUserByEmail(String email) {
     QUserModel qUser = QUserModel.userModel;
@@ -25,6 +26,14 @@ public class UserQueryDSLImpl implements UserQueryDSL{
     QUserModel qUser = QUserModel.userModel;
     return factory.selectFrom(QUserModel.userModel)
             .where(qUser.email.eq(email))
+            .fetchFirst() != null;
+  }
+
+  @Override
+  public boolean existsByNickname(String nickname) {
+    QUserModel qUser = QUserModel.userModel;
+    return factory.selectFrom(QUserModel.userModel)
+            .where(qUser.nickname.eq(nickname))
             .fetchFirst() != null;
   }
 

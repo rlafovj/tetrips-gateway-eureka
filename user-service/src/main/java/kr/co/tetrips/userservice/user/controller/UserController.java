@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@CrossOrigin("*")
-@RequestMapping("/api/user")
+@CrossOrigin(value = "*", allowedHeaders = "*")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -38,6 +38,18 @@ public class UserController {
     public ResponseEntity<MessengerDTO> existsEmail(@RequestParam String email) {
         log.info("existsEmail: {}", email);
         return ResponseEntity.ok(userService.existsEmail(email));
+    }
+
+    @GetMapping("/exists-nickname")
+    public ResponseEntity<MessengerDTO> existsNickname(@RequestParam String nickname) {
+        log.info("existsNickname: {}", nickname);
+        return ResponseEntity.ok(userService.existsNickname(nickname));
+    }
+
+    @GetMapping("/getUserInfo")
+    public ResponseEntity<UserDTO> getUserInfo(@RequestParam String email) {
+        log.info("getUserInfo: {}", email);
+        return ResponseEntity.ok(userService.getUserInfo(email));
     }
 
     @PostMapping("/heartbeat")

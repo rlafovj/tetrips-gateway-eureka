@@ -6,6 +6,7 @@ import kr.co.tetrips.userservice.user.domain.model.UserModel;
 import kr.co.tetrips.userservice.user.domain.dto.UserDTO;
 import kr.co.tetrips.userservice.user.UserRepository;
 import kr.co.tetrips.userservice.user.domain.dto.MessengerDTO;
+import kr.co.tetrips.userservice.user.domain.vo.Registration;
 import kr.co.tetrips.userservice.user.domain.vo.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +28,14 @@ public class UserServiceImpl implements UserService {
     public MessengerDTO signup(UserDTO param) {
         return Stream.of(param)
                 .filter(i -> !userRepository.existsByEmail(i.getEmail()))
+                .filter(i -> !userRepository.existsByNickname(i.getNickname()))
                 .map(i -> userRepository.save(UserModel.builder()
                         .email(i.getEmail())
                         .password(passwordEncoder.encode(i.getPassword()))
                         .nickname(i.getNickname())
                         .gender(i.isGender())
                         .birthDate(i.getBirthDate())
+                        .registration(Registration.LOCAL)
                         .build()))
                 .map(i -> MessengerDTO.builder()
                         .message("SUCCESS")
@@ -41,7 +44,7 @@ public class UserServiceImpl implements UserService {
                 .findAny()
                 .orElseGet(() -> MessengerDTO.builder()
                         .message("FAIL")
-                        .status(409)//duplicate email
+                        .status(209)//duplicate email
                         .build());
     }
 
@@ -128,12 +131,12 @@ public class UserServiceImpl implements UserService {
     public MessengerDTO existsEmail(String email) {
         return userRepository.existsByEmail(email) ?
                 MessengerDTO.builder()
-                        .message("SUCCESS")
-                        .status(200)
+                        .message("EXIST")
+                        .status(209)
                         .build() :
                 MessengerDTO.builder()
-                        .message("FAIL")
-                        .status(409)//duplicate email
+                        .message("POSSIBLE")
+                        .status(209)
                         .build();
     }
 
@@ -142,4 +145,31 @@ public class UserServiceImpl implements UserService {
         UserModel userModel = userRepository.findUserByEmail(dtoOnlyEmail.getEmail()).orElseGet(() -> UserModel.builder().build());
         return userModel.getNickname();
     }
+
+    @Override
+    public MessengerDTO existsNickname(String nickname) {
+        return userRepository.existsByNickname(nickname) ?
+                MessengerDTO.builder()
+                        .message("EXIST")
+                        .status(200)
+                        .build() :
+                MessengerDTO.builder()
+                        .message("POSSIBLE")
+                        .status(200)
+                        .build();
+    }
+
+    @Override
+    public UserDTO getUserInfo(String email) {
+        UserModel userModel = userRepository.findUserByEmail(email).orElseGet(() -> UserModel.builder().build());
+        return UserDTO.builder()
+                .email(userModel.getEmail())
+                .nickname(userModel.getNickname())
+                .gender(userModel.isGender())
+                .birthDate(userModel.getBirthDate())
+                .registration(userModel.getRegistration().toString())
+                .build();
+    }
+
+
 }

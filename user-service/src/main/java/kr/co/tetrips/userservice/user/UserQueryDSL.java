@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface UserQueryDSL {
   Optional<UserModel> findUserByEmail(String email);
   boolean existsByEmail(String email);
+
+  boolean existsByNickname(String nickname);
   Long getUserIdByEmail(String email);
 }

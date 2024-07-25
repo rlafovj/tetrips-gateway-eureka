@@ -1,6 +1,7 @@
 package kr.co.tetrips.gatewayservice.router;
 
 import kr.co.tetrips.gatewayservice.config.URIConfiguration;
+import kr.co.tetrips.gatewayservice.filter.AuthorizationHeaderFilter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -15,7 +16,7 @@ import reactor.core.publisher.Mono;
 @EnableConfigurationProperties(URIConfiguration.class)
 public class GatewayRouter {
   @Bean
-  public RouteLocator myRoutes(RouteLocatorBuilder builder) {
+  public RouteLocator myRoutes(RouteLocatorBuilder builder, AuthorizationHeaderFilter authorizationHeaderFilter) {
     return builder.routes()
             .route(p -> p
                     .path("/get")
@@ -27,6 +28,18 @@ public class GatewayRouter {
                             .setName("mycmd")
                             .setFallbackUri("forward:/fallback")))
                     .uri("http://httpbin.org:80"))
+            .route(p -> p
+                    .path("/user/getUserInfo")
+                    .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
+                    .uri("lb://USER/user/getUserInfo"))
+            .route(p -> p
+                    .path("/user/exists-email")
+                    .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
+                    .uri("lb://USER/user/exists-email"))
+            .route(p -> p
+                    .path("/user/exists-nickname")
+                    .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
+                    .uri("lb://USER/user/exists-nickname"))
             .build();
 
   }

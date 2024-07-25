@@ -33,4 +33,8 @@ public interface UserService {
   MessengerDTO existsEmail(String email);
 
   String getNickname(UserDTO dtoOnlyEmail);
+
+  MessengerDTO existsNickname(String nickname);
+
+  UserDTO getUserInfo(String email);
 }
