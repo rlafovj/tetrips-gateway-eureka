@@ -26,6 +26,11 @@ public class PrincipalUserDetails implements UserDetails, OAuth2User {
   }
 
   @Override
+  public Map<String, Object> getAttributes() {
+    return attributes;
+  }
+
+  @Override
   public String getName() {
     return attributes.get(user.getRegistration().name()).toString();
   }

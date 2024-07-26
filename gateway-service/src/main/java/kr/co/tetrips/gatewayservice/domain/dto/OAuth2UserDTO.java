@@ -13,11 +13,11 @@ public record OAuth2UserDTO(
         String profile
 ) {
 
-  public static OAuth2UserDTO of(Registration registrationId, Map<String, Object> attributes) {
-    return switch (registrationId) {
+  public static OAuth2UserDTO of(Registration registration, Map<String, Object> attributes) {
+    return switch (registration) {
       case GOOGLE -> ofGoogle(attributes);
       //case KAKAO -> ofKakao(attributes);
-      //case NAVER -> ofNaver(attributes);
+      case NAVER -> ofNaver(attributes);
       default -> null;
     };
   }
@@ -28,6 +28,15 @@ public record OAuth2UserDTO(
             .nickname((String) attributes.get("name"))
             .email((String) attributes.get("email"))
             .profile((String) attributes.get("picture"))
+            .build();
+  }
+
+  private static OAuth2UserDTO ofNaver(Map<String, Object> attributes) {
+    Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+    return OAuth2UserDTO.builder()
+            .id((String) response.get("id"))
+            .nickname((String) response.get("nickname"))
+            .email((String) response.get("email"))
             .build();
   }
 }

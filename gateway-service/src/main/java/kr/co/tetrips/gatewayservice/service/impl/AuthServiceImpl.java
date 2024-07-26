@@ -113,7 +113,6 @@ public class AuthServiceImpl implements AuthService{
 
   @Override
   public Mono<ServerResponse> logout(String refreshToken) {
-    log.info(">>> logout 진입");
     return Mono.just(refreshToken)
             .flatMap(i -> Mono.just(jwtProvider.removeBearer(refreshToken)))
             .filter(i -> jwtProvider.isTokenValid(refreshToken, true))
