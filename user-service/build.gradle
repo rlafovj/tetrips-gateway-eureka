@@ -58,6 +58,8 @@ dependencies {
 
   // Config Server
   implementation 'org.springframework.cloud:spring-cloud-starter-config'
+  // Swagger
+  implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
 
 //    // JWT

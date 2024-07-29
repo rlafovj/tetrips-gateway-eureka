@@ -167,9 +167,12 @@ public class JwtProvider {
     return Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
   }
 
-//  public Long getRefreshExpired() {
-//    return Instant.now().plus(refreshExpiredDate, ChronoUnit.MILLIS).toEpochMilli();
-//  }
+  public Long getAccessExpired() {
+    return Instant.now().plus(accessExpiredDate, ChronoUnit.MILLIS).toEpochMilli();
+  }
+  public Long getRefreshExpired() {
+    return Instant.now().plus(refreshExpiredDate, ChronoUnit.MILLIS).toEpochMilli();
+  }
 //
 //  public Boolean checkExpiration(String token){
 //    return Stream.of(Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token))

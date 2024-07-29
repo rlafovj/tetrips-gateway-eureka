@@ -30,6 +30,10 @@ public class GatewayRouter {
                     .path("/user/exists-nickname")
                     .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
                     .uri("lb://USER/user/exists-nickname"))
+//            .route(p -> p
+//                    .path("/swagger/**")
+//                    .uri("lb://USER")
+//            ) //for swagger
             .build();
 
   }
