@@ -19,6 +19,8 @@ public class GatewayRouter {
   public RouteLocator myRoutes(RouteLocatorBuilder builder, AuthorizationHeaderFilter authorizationHeaderFilter) {
     return builder.routes()
             .route(p -> p
+                    .path("/auth/signup").uri("lb://USER/auth/signup"))
+            .route(p -> p
                     .path("/user/getUserInfo")
                     .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
                     .uri("lb://USER/user/getUserInfo"))
@@ -30,6 +32,10 @@ public class GatewayRouter {
                     .path("/user/exists-nickname")
                     .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
                     .uri("lb://USER/user/exists-nickname"))
+            .route(p -> p
+                    .path("/user/updateUserInfo")
+                    .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
+                    .uri("lb://USER/user/updateUserInfo"))
 //            .route(p -> p
 //                    .path("/swagger/**")
 //                    .uri("lb://USER")

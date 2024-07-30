@@ -1,4 +1,5 @@
 package kr.co.tetrips.gatewayservice.service.impl;
+import kr.co.tetrips.gatewayservice.domain.dto.UserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -97,6 +98,7 @@ public class AuthServiceImpl implements AuthService{
 
   @Override
   public Mono<ServerResponse> refreshToken(String refreshToken) {
+    log.info("refreshToken 기반 accessToken 재발급 요청");
     return Mono.just(refreshToken)
         .flatMap(i -> Mono.just(jwtProvider.removeBearer(refreshToken)))
         .filter(i -> jwtProvider.isTokenValid(refreshToken, true))
@@ -110,8 +112,8 @@ public class AuthServiceImpl implements AuthService{
                             .value(accessToken)
                             .maxAge(jwtProvider.getAccessExpiredDate())
                             .path("/")
-                            .secure(false) // for test
-                            .sameSite("None") // for test
+//                            .secure(false) // for test
+//                            .sameSite("None") // for test
                             // .httpOnly(true)
                             .build()
                 )

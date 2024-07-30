@@ -2,6 +2,7 @@ package kr.co.tetrips.userservice.user.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
+import kr.co.tetrips.userservice.user.domain.vo.Registration;
 import kr.co.tetrips.userservice.user.domain.vo.Role;
 import lombok.Builder;
 import lombok.Data;
@@ -25,11 +26,11 @@ public class UserDTO {
   private boolean gender;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private LocalDate birthDate;
-  private String registration;
+  private Registration registration;
   private List<Role> role;
 
   @QueryProjection
-  public UserDTO(Long id, String email, String password, String nickname, boolean gender, LocalDate birthDate, String registration, List<Role> role) {
+  public UserDTO(Long id, String email, String password, String nickname, boolean gender, LocalDate birthDate, Registration registration, List<Role> role) {
     this.id = id;
     this.email = email;
     this.password = password;

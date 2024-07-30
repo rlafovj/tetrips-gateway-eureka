@@ -25,6 +25,7 @@ public interface UserService {
             .nickname(userDTO.getNickname())
             .gender(userDTO.isGender())
             .birthDate(userDTO.getBirthDate())
+            .registration(userDTO.getRegistration())
             .build();
   }
   MessengerDTO signup(UserDTO param);
@@ -37,4 +38,6 @@ public interface UserService {
   MessengerDTO existsNickname(String nickname);
 
   UserDTO getUserInfo(String email);
+
+  UserDTO updateUserInfo(UserDTO dto);
 }

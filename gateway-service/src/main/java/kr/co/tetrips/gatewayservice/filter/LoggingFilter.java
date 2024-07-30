@@ -28,7 +28,7 @@ public class LoggingFilter extends AbstractGatewayFilterFactory<LoggingFilter.Co
   public GatewayFilter apply(Config config) {
     return new OrderedGatewayFilter((exchange, chain) -> {
       log.info("Logging request baseMessage: {}", config.getBaseMessage());
-      if (config.isPreLogger())   log.info("Logging PRE Filter: {}, {}", exchange.getRequest().toString());
+      if (config.isPreLogger())   log.info("Logging PRE Filter: {}", exchange.getRequest().toString());
       return chain.filter(exchange).then(Mono.fromRunnable(() -> {
         if (config.isPostLogger())  log.info("Logging POST Filter: {}", exchange.getResponse().toString());
       }));

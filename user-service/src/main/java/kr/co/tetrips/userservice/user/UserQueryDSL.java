@@ -11,5 +11,7 @@ public interface UserQueryDSL {
   boolean existsByEmail(String email);
 
   boolean existsByNickname(String nickname);
+
+  boolean updateUserInfo(UserModel updateUser);
   Long getUserIdByEmail(String email);
 }

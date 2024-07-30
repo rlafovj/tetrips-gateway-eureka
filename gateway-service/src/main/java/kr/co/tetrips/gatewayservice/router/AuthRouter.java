@@ -1,6 +1,7 @@
 package kr.co.tetrips.gatewayservice.router;
 
 import kr.co.tetrips.gatewayservice.domain.dto.LoginDTO;
+import kr.co.tetrips.gatewayservice.domain.dto.UserDTO;
 import kr.co.tetrips.gatewayservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

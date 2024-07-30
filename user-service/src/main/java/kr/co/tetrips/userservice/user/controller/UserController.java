@@ -52,6 +52,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfo(email));
     }
 
+    @PostMapping("/updateUserInfo")
+    public ResponseEntity<UserDTO> updateUserInfo(@RequestBody UserDTO dto) {
+        log.info("updateUserInfo: {}", dto);
+        return ResponseEntity.ok(userService.updateUserInfo(dto));
+    }
+
     @PostMapping("/heartbeat")
     public ResponseEntity<MessengerDTO> heartbeat() {
         return ResponseEntity.ok(MessengerDTO.builder().message("SUCCESS").status(200).build());

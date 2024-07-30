@@ -25,8 +25,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public MessengerDTO signup(UserDTO param) {
-        return Stream.of(param)
+    public MessengerDTO signup(UserDTO dto) {
+        return Stream.of(dto)
                 .filter(i -> !userRepository.existsByEmail(i.getEmail()))
                 .filter(i -> !userRepository.existsByNickname(i.getNickname()))
                 .map(i -> userRepository.save(UserModel.builder()
@@ -167,8 +167,14 @@ public class UserServiceImpl implements UserService {
                 .nickname(userModel.getNickname())
                 .gender(userModel.isGender())
                 .birthDate(userModel.getBirthDate())
-                .registration(userModel.getRegistration().toString())
+                .registration(userModel.getRegistration())
                 .build();
+    }
+
+    @Override
+    public UserDTO updateUserInfo(UserDTO dto) {
+        UserModel updateUser = dtoToEntity(dto);
+        return userRepository.updateUserInfo(updateUser)? getUserInfo(dto.getEmail()) : null;
     }
 
 
