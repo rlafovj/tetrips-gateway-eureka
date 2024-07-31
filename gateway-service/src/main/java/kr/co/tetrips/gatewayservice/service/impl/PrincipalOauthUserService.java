@@ -28,36 +28,35 @@ public class PrincipalOauthUserService implements ReactiveOAuth2UserService<OAut
   public Mono<OAuth2User> loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
     return new DefaultReactiveOAuth2UserService()
-            .loadUser(userRequest)
-            .log()
-            .flatMap(user -> Mono.just(user.getAttributes()))
-            .flatMap(attributes ->
-                    Mono.just(userRequest.getClientRegistration().getClientName())
-                            .log()
-                            .flatMap(clientId -> Mono.just(Registration.valueOf(clientId.toUpperCase())))
-                            .flatMap(registration ->
-                                    Mono.just(OAuth2UserDTO.of(registration, attributes))
-                                            // .flatMap(oauth2UserDTO ->
-                                            //     webClient.post()
-                                            //     .uri("lb://user-service/auth/oauth2/" + registration.name().toLowerCase())
-                                            //     .accept(MediaType.APPLICATION_JSON)
-                                            //     .bodyValue(oauth2UserDTO)
-                                            //     .retrieve()
-                                            //     .bodyToMono(PrincipalUserDetails.class)
-                                            // )
-                                            .flatMap(oauth2UserDTO ->
-                                                    Mono.just(new PrincipalUserDetails(
-                                                                    User.builder()
-                                                                            .email(oauth2UserDTO.email())
-                                                                            .nickname(oauth2UserDTO.nickname())
-                                                                            .role(List.of(Role.USER))
-                                                                            .build(),
-                                                                    attributes
-                                                            )
-                                                    )
-                                            )
+        .loadUser(userRequest)
+        .log()
+        .flatMap(user -> Mono.just(user.getAttributes()))
+        .flatMap(attributes ->
+            Mono.just(userRequest.getClientRegistration().getClientName())
+                .log()
+                .flatMap(clientId -> Mono.just(Registration.valueOf(clientId.toUpperCase())))
+                .flatMap(registration ->
+                    Mono.just(OAuth2UserDTO.of(registration, attributes))
+                        // .flatMap(oauth2UserDTO ->
+                        //     webClient.post()
+                        //     .uri("lb://user-service/auth/oauth2/" + registration.name().toLowerCase())
+                        //     .accept(MediaType.APPLICATION_JSON)
+                        //     .bodyValue(oauth2UserDTO)
+                        //     .retrieve()
+                        //     .bodyToMono(PrincipalUserDetails.class)
+                        // )
+                        .flatMap(oauth2UserDTO ->
+                            Mono.just(new PrincipalUserDetails(
+                                    User.builder()
+                                            .email(oauth2UserDTO.email())
+                                            .nickname(oauth2UserDTO.nickname())
+                                            .role(List.of(Role.USER))
+                                            .build(),
+                                    attributes
+                                )
                             )
-            )
-            ;
+                        )
+                )
+        );
   }
 }
