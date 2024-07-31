@@ -2,6 +2,7 @@ package kr.co.tetrips.userservice.user.service;
 
 import jakarta.transaction.Transactional;
 import kr.co.tetrips.userservice.user.domain.dto.LoginResultDTO;
+import kr.co.tetrips.userservice.user.domain.model.RoleModel;
 import kr.co.tetrips.userservice.user.domain.model.UserModel;
 import kr.co.tetrips.userservice.user.domain.dto.UserDTO;
 import kr.co.tetrips.userservice.user.UserRepository;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -29,14 +32,22 @@ public class UserServiceImpl implements UserService {
         return Stream.of(dto)
                 .filter(i -> !userRepository.existsByEmail(i.getEmail()))
                 .filter(i -> !userRepository.existsByNickname(i.getNickname()))
-                .map(i -> userRepository.save(UserModel.builder()
-                        .email(i.getEmail())
-                        .password(passwordEncoder.encode(i.getPassword()))
-                        .nickname(i.getNickname())
-                        .gender(i.isGender())
-                        .birthDate(i.getBirthDate())
-                        .registration(Registration.LOCAL)
-                        .build()))
+                .map(i -> {
+                    UserModel userModel = UserModel.builder()
+                            .email(i.getEmail())
+                            .password(passwordEncoder.encode(i.getPassword()))
+                            .nickname(i.getNickname())
+                            .gender(i.isGender())
+                            .birthDate(i.getBirthDate())
+                            .registration(Registration.LOCAL)
+                            .build();
+                    RoleModel roleModel = RoleModel.builder()
+                            .role(Role.USER)
+                            .userModel(userModel)
+                            .build();
+                    userModel.setRoleId(List.of(roleModel));
+                    return userRepository.save(userModel);
+                })
                 .map(i -> MessengerDTO.builder()
                         .message("SUCCESS")
                         .status(200)
@@ -136,7 +147,7 @@ public class UserServiceImpl implements UserService {
                         .build() :
                 MessengerDTO.builder()
                         .message("POSSIBLE")
-                        .status(209)
+                        .status(200)
                         .build();
     }
 
@@ -151,7 +162,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByNickname(nickname) ?
                 MessengerDTO.builder()
                         .message("EXIST")
-                        .status(200)
+                        .status(209)
                         .build() :
                 MessengerDTO.builder()
                         .message("POSSIBLE")
@@ -162,12 +173,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserInfo(String email) {
         UserModel userModel = userRepository.findUserByEmail(email).orElseGet(() -> UserModel.builder().build());
+        List<Role> role = userModel.getRoleId().stream().map(roleModel -> roleModel.getRole()).toList();
         return UserDTO.builder()
                 .email(userModel.getEmail())
                 .nickname(userModel.getNickname())
                 .gender(userModel.isGender())
                 .birthDate(userModel.getBirthDate())
                 .registration(userModel.getRegistration())
+                .role(role)
                 .build();
     }
 

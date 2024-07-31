@@ -26,11 +26,9 @@ public class GatewayRouter {
                     .uri("lb://USER/user/getUserInfo"))
             .route(p -> p
                     .path("/user/exists-email")
-                    .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
                     .uri("lb://USER/user/exists-email"))
             .route(p -> p
                     .path("/user/exists-nickname")
-                    .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
                     .uri("lb://USER/user/exists-nickname"))
             .route(p -> p
                     .path("/user/updateUserInfo")
