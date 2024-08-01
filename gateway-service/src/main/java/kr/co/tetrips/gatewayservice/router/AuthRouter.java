@@ -21,7 +21,7 @@ public class AuthRouter {
     return RouterFunctions.route()
             .path("/auth", builder -> builder
                     .POST("/login/local", req -> req.bodyToMono(LoginDTO.class).flatMap(authService::localLogin))
-                    .POST("/getNickname", req -> req.headers().header("Authorization").stream().findFirst().map(authService::getNickname).orElseGet(authService::createResponseForEmpty))
+                    .GET("/getNickname", req -> req.headers().header("Authorization").stream().findFirst().map(authService::getNickname).orElseGet(authService::createResponseForEmpty))
                     .POST("/refresh", req -> req.headers().header("Authorization").stream().findFirst().map(authService::refreshToken).orElseGet(authService::createResponseForEmpty))
                     .POST("/logout", req -> req.headers().header("Authorization").stream().findFirst().map(authService::logout).orElseGet(authService::createResponseForEmpty))
             )
