@@ -44,7 +44,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
       @SuppressWarnings("null")
       String token = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
 
-      if(token == null)
+      if(token == null || token.isEmpty())
         return onError(exchange, HttpStatus.UNAUTHORIZED, "No Token");
 
       String jwt = jwtTokenProvider.removeBearer(token);

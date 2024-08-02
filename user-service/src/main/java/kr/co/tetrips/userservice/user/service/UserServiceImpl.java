@@ -49,13 +49,13 @@ public class UserServiceImpl implements UserService {
                     return userRepository.save(userModel);
                 })
                 .map(i -> MessengerDTO.builder()
-                        .message("SUCCESS")
+                        .message("SIGN UP SUCCESS")
                         .status(200)
                         .build())
                 .findAny()
                 .orElseGet(() -> MessengerDTO.builder()
-                        .message("FAIL")
-                        .status(209)//duplicate email
+                        .message("Duplicate Email or Nickname")
+                        .status(409)
                         .build());
     }
 
