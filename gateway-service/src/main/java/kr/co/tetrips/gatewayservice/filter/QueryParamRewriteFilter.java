@@ -15,13 +15,16 @@ public class QueryParamRewriteFilter implements GatewayFilter {
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
     String email = exchange.getAttribute("email");
+    String nickname = exchange.getAttribute("nickname");
+    UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(exchange.getRequest().getURI());
     if (email != null) {
-      URI newUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI())
-              .replaceQueryParam("email", email)
-              .build(true)
-              .toUri();
-      exchange = exchange.mutate().request(exchange.getRequest().mutate().uri(newUri).build()).build();
+      uriBuilder.replaceQueryParam("email", email);
     }
+    if (nickname != null) {
+      uriBuilder.replaceQueryParam("nickname", nickname);
+    }
+    URI newUri = uriBuilder.build(true).toUri();
+    exchange = exchange.mutate().request(exchange.getRequest().mutate().uri(newUri).build()).build();
     return chain.filter(exchange);
   }
 }

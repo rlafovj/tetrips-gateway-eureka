@@ -135,7 +135,7 @@ public class AuthServiceImpl implements AuthService{
   public Mono<ServerResponse> createResponseForEmpty() {
     return Mono.defer(() -> {
       String message = "Please Login Again";
-      return ServerResponse.status(HttpStatus.OK)
+      return ServerResponse.status(HttpStatus.UNAUTHORIZED)
               .contentType(MediaType.APPLICATION_JSON)
               .body(BodyInserters.fromValue(Collections.singletonMap("message", message)));
     });

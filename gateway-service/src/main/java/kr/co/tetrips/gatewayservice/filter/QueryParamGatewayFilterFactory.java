@@ -17,8 +17,12 @@ public class QueryParamGatewayFilterFactory extends AbstractGatewayFilterFactory
   public GatewayFilter apply(Config config) {
     return (exchange, chain) -> {
       String email = exchange.getRequest().getQueryParams().getFirst("email");
+      String nickname = exchange.getRequest().getQueryParams().getFirst("nickname");
       if (email != null) {
         exchange.getAttributes().put("email", email);
+      }
+      if (nickname != null) {
+        exchange.getAttributes().put("nickname", nickname);
       }
       return chain.filter(exchange);
     };
