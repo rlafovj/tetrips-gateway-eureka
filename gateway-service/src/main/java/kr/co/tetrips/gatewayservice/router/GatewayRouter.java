@@ -48,6 +48,12 @@ public class GatewayRouter {
                     .path("/user/updateUserInfo")
                     .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config())))
                     .uri("lb://USER/user/updateUserInfo"))
+            .route(p -> p
+                    .path("/user/deleteUser")
+                    .filters(f -> f.filter(authorizationHeaderFilter.apply(new AuthorizationHeaderFilter.Config()))
+                            .filter(queryParamFilter.apply(new QueryParamGatewayFilterFactory.Config()))
+                            .filter(queryParamRewriteFilter))
+                    .uri("lb://USER/user/deleteUser"))
 //            .route(p -> p
 //                    .path("/swagger/**")
 //                    .uri("lb://USER")

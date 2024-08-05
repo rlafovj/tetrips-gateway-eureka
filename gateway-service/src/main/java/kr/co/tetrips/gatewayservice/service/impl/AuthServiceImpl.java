@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -49,7 +50,7 @@ public class AuthServiceImpl implements AuthService{
                                     .cookie(
                                         ResponseCookie.from("accessToken")
                                                 .value(accessToken)
-                                                .maxAge(jwtProvider.getAccessExpired())
+                                                .maxAge(jwtProvider.getAccessExpired()/1000)
                                                 .path("/")
 //                                                .secure(false) // for test
 //                                                .sameSite("None") // for test
@@ -59,7 +60,7 @@ public class AuthServiceImpl implements AuthService{
                                     .cookie(
                                         ResponseCookie.from("refreshToken")
                                                 .value(refreshToken)
-                                                .maxAge(jwtProvider.getRefreshExpired())
+                                                .maxAge(jwtProvider.getRefreshExpired()/1000)
                                                 .path("/")
 //                                                .secure(false) // for test
 //                                                .sameSite("None") // for test
@@ -69,7 +70,7 @@ public class AuthServiceImpl implements AuthService{
                                     .cookie(
                                         ResponseCookie.from("username")
                                                 .value(jwtProvider.extractEmail(accessToken))
-                                                .maxAge(jwtProvider.getAccessExpired())
+                                                .maxAge(jwtProvider.getRefreshExpired()/1000)
                                                 .path("/")
 //                                                .secure(false) // for test
 //                                                .sameSite("None") // for test

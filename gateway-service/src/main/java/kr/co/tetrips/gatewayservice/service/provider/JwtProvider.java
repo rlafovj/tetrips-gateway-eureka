@@ -168,10 +168,11 @@ public class JwtProvider {
   }
 
   public Long getAccessExpired() {
-    return Instant.now().plus(accessExpiredDate, ChronoUnit.MILLIS).toEpochMilli();
+//    return Instant.now().plus(accessExpiredDate, ChronoUnit.MILLIS).toEpochMilli();
+    return accessExpiredDate;
   }
   public Long getRefreshExpired() {
-    return Instant.now().plus(refreshExpiredDate, ChronoUnit.MILLIS).toEpochMilli();
+    return refreshExpiredDate;
   }
 //
 //  public Boolean checkExpiration(String token){

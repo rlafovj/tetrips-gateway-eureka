@@ -58,6 +58,12 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserInfo(dto));
     }
 
+    @DeleteMapping("/deleteUser")
+    public ResponseEntity<MessengerDTO> deleteUser(@RequestParam String email) {
+        log.info("deleteUser: {}", email);
+        return ResponseEntity.ok(userService.deleteUser(email));
+    }
+
     @PostMapping("/heartbeat")
     public ResponseEntity<MessengerDTO> heartbeat() {
         return ResponseEntity.ok(MessengerDTO.builder().message("SUCCESS").status(200).build());

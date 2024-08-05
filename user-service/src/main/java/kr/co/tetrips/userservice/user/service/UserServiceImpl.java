@@ -190,5 +190,21 @@ public class UserServiceImpl implements UserService {
         return userRepository.updateUserInfo(updateUser)? getUserInfo(dto.getEmail()) : null;
     }
 
+    @Override
+    public MessengerDTO deleteUser(String email) {
+        UserModel userModel = userRepository.findUserByEmail(email).orElseGet(() -> UserModel.builder().build());
+        if (userModel.getEmail() == null || userModel.getEmail().isEmpty()) {
+            return MessengerDTO.builder()
+                    .message("Already Deleted User or Not Available User")
+                    .status(404)
+                    .build();
+        } else {
+            userRepository.delete(userModel);
+            return MessengerDTO.builder()
+                    .message("Delete Success")
+                    .status(200)
+                    .build();
+        }
+    }
 
 }

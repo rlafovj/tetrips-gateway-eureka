@@ -40,4 +40,6 @@ public interface UserService {
   UserDTO getUserInfo(String email);
 
   UserDTO updateUserInfo(UserDTO dto);
+
+  MessengerDTO deleteUser(String email);
 }
