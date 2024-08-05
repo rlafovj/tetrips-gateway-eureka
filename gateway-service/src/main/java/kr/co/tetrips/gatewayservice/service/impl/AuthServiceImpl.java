@@ -102,10 +102,15 @@ public class AuthServiceImpl implements AuthService{
     log.info("refreshToken 기반 accessToken 재발급 요청");
     return Mono.just(refreshToken)
         .flatMap(i -> Mono.just(jwtProvider.removeBearer(refreshToken)))
+        .doOnNext(i -> log.info("After removeBearer: " + i))
         .filter(i -> jwtProvider.isTokenValid(refreshToken, true))
-        .filterWhen(i -> jwtProvider.isTokenInRedis(refreshToken))
+        .doOnNext(i -> log.info("After isTokenValid: " + i))
+//        .filterWhen(i -> jwtProvider.isTokenInRedis(refreshToken))
+//        .doOnNext(i -> log.info("After isTokenInRedis: " + i))
         .flatMap(i -> Mono.just(jwtProvider.extractPrincipalUserDetails(refreshToken)))
+        .doOnNext(i -> log.info("After extractPrincipalUserDetails: " + i))
         .flatMap(i -> jwtProvider.generateToken(i, false))
+        .doOnNext(i -> log.info("After generateToken: " + i))
         .flatMap(accessToken ->
             ServerResponse.ok()
                 .cookie(
@@ -119,7 +124,12 @@ public class AuthServiceImpl implements AuthService{
                             .build()
                 )
                 .build()
-        );
+        ).switchIfEmpty(Mono.defer(() -> {
+              String message = "@@@@@@@@Refresh Failed: refreshToken is invalid or expired@@@@@@@@@@@@@@";
+              return ServerResponse.status(HttpStatus.UNAUTHORIZED)
+//                      .contentType(MediaType.APPLICATION_JSON)
+                      .body(BodyInserters.fromValue(Collections.singletonMap("message", message)));
+            }));
   }
 
   @Override
