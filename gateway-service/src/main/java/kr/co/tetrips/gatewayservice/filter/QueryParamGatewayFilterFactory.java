@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Component
 public class QueryParamGatewayFilterFactory extends AbstractGatewayFilterFactory<QueryParamGatewayFilterFactory.Config> {
 
@@ -22,7 +25,7 @@ public class QueryParamGatewayFilterFactory extends AbstractGatewayFilterFactory
         exchange.getAttributes().put("email", email);
       }
       if (nickname != null) {
-        exchange.getAttributes().put("nickname", nickname);
+        exchange.getAttributes().put("nickname", URLEncoder.encode(nickname, StandardCharsets.UTF_8));
       }
       return chain.filter(exchange);
     };

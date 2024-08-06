@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -68,8 +69,9 @@ public class JwtProvider {
   }
 
   @SuppressWarnings("unchecked")
-  public List<String> extractRoles(String jwt){
-    return extractClaim(jwt, i -> i.get("role", List.class));
+  public List<Role> extractRoles(String jwt){
+    List<String> roleStrings = extractClaim(jwt, i -> i.get("role", List.class));
+    return roleStrings.stream().map(Role::getRole).collect(Collectors.toList());
   }
 
   public Mono<String> generateToken(UserDetails userDetails, boolean isRefreshToken){
@@ -224,7 +226,7 @@ public class JwtProvider {
   }
 
   public PrincipalUserDetails extractPrincipalUserDetails(String jwt){
-    return new PrincipalUserDetails(User.builder().email(extractEmail(jwt)).role(extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList()).build());
+    return new PrincipalUserDetails(User.builder().email(extractEmail(jwt)).role(extractRoles(jwt)).build());
   }
 
   public Mono<Boolean> removeTokenInRedis(String token){

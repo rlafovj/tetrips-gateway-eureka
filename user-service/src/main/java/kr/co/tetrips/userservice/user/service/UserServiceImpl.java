@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByEmail(email) ?
                 MessengerDTO.builder()
                         .message("EXIST")
-                        .status(209)
+                        .status(409)
                         .build() :
                 MessengerDTO.builder()
                         .message("POSSIBLE")
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByNickname(nickname) ?
                 MessengerDTO.builder()
                         .message("EXIST")
-                        .status(209)
+                        .status(409)
                         .build() :
                 MessengerDTO.builder()
                         .message("POSSIBLE")

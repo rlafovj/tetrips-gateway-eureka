@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 @Slf4j
 @RestController
 @CrossOrigin(value = "*", allowedHeaders = "*")
@@ -37,13 +40,23 @@ public class UserController {
     @GetMapping("/exists-email")
     public ResponseEntity<MessengerDTO> existsEmail(@RequestParam String email) {
         log.info("existsEmail: {}", email);
-        return ResponseEntity.ok(userService.existsEmail(email));
+        MessengerDTO result = userService.existsEmail(email);
+        if(result.getStatus() == 200) {return ResponseEntity.ok(userService.existsEmail(email));}
+        else {return ResponseEntity.status(409).body(result);}
     }
 
     @GetMapping("/exists-nickname")
     public ResponseEntity<MessengerDTO> existsNickname(@RequestParam String nickname) {
-        log.info("existsNickname: {}", nickname);
-        return ResponseEntity.ok(userService.existsNickname(nickname));
+        try {
+            String decodedNickname = URLDecoder.decode(nickname, "UTF-8");
+            log.info("existsNickname: {}", decodedNickname);
+            MessengerDTO result = userService.existsNickname(decodedNickname);
+            if(result.getStatus() == 200) {return ResponseEntity.ok(userService.existsNickname(decodedNickname));}
+            else {return ResponseEntity.status(409).body(result);}
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400).body(MessengerDTO.builder().message("URL Decode Error").status(400).build());
+        }
     }
 
     @GetMapping("/getUserInfo")

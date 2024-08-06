@@ -4,6 +4,7 @@ import java.util.List;
 
 import kr.co.tetrips.gatewayservice.domain.vo.Role;
 import kr.co.tetrips.gatewayservice.service.provider.JwtProvider;
+import lombok.Setter;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -31,7 +32,9 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
   public static class Config {
     private String headerName;
     private String headerValue;
+    @Setter
     private List<Role> role;
+
   }
 
   @Override
@@ -52,7 +55,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
       if(!jwtTokenProvider.isTokenValid(jwt, false))
         return onError(exchange, HttpStatus.UNAUTHORIZED, "Invalid Token");
 
-      List<Role> role = jwtTokenProvider.extractRoles(jwt).stream().map(i -> Role.valueOf(i)).toList();
+      List<Role> role = jwtTokenProvider.extractRoles(jwt);
 
       for(var i : config.getRole()){
         if(role.contains(i))
