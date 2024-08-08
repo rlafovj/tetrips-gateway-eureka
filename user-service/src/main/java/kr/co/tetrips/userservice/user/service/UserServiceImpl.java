@@ -1,6 +1,7 @@
 package kr.co.tetrips.userservice.user.service;
 
 import jakarta.transaction.Transactional;
+import kr.co.tetrips.userservice.user.RoleRepository;
 import kr.co.tetrips.userservice.user.domain.dto.LoginResultDTO;
 import kr.co.tetrips.userservice.user.domain.model.RoleModel;
 import kr.co.tetrips.userservice.user.domain.model.UserModel;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
@@ -191,6 +193,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public MessengerDTO deleteUser(String email) {
         UserModel userModel = userRepository.findUserByEmail(email).orElseGet(() -> UserModel.builder().build());
         if (userModel.getEmail() == null || userModel.getEmail().isEmpty()) {
@@ -199,6 +202,7 @@ public class UserServiceImpl implements UserService {
                     .status(404)
                     .build();
         } else {
+            roleRepository.deleteByUserModel_Id(userModel.getId());
             userRepository.delete(userModel);
             return MessengerDTO.builder()
                     .message("Delete Success")
@@ -206,5 +210,4 @@ public class UserServiceImpl implements UserService {
                     .build();
         }
     }
-
 }
