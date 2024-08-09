@@ -60,9 +60,9 @@ public class UserController {
     }
 
     @GetMapping("/getUserInfo")
-    public ResponseEntity<UserDTO> getUserInfo(@RequestParam String email) {
-        log.info("getUserInfo: {}", email);
-        return ResponseEntity.ok(userService.getUserInfo(email));
+    public ResponseEntity<UserDTO> getUserInfo(@RequestBody UserDTO dtoOnlyEmail) {
+        log.info(">>> getUserInfo con 진입: {}", dtoOnlyEmail);
+        return ResponseEntity.ok(userService.getUserInfo(dtoOnlyEmail.getEmail()));
     }
 
     @PostMapping("/updateUserInfo")

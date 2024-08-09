@@ -29,19 +29,19 @@ public class GatewayRouter {
             .route(p -> p
                     .path("/auth/signup")
                     .uri("lb://USER/auth/signup"))
-            .route(p -> p
-                    .path("/user/getUserInfo")
-                    .filters(f -> {
-                      AuthorizationHeaderFilter.Config config = new AuthorizationHeaderFilter.Config();
-                      config.setHeaderName("Authorization");
-                      config.setHeaderValue("Bearer");
-                      config.setRole(Arrays.asList(Role.USER, Role.ADMIN));
-                      f.filter(authorizationHeaderFilter.apply(config));
-                      f.filter(queryParamFilter.apply(new QueryParamGatewayFilterFactory.Config()));
-                      f.filter(queryParamRewriteFilter);
-                      return f;
-                    })
-                    .uri("lb://USER/user/getUserInfo"))
+//            .route(p -> p
+//                    .path("/user/getUserInfo")
+//                    .filters(f -> {
+//                      AuthorizationHeaderFilter.Config config = new AuthorizationHeaderFilter.Config();
+//                      config.setHeaderName("Authorization");
+//                      config.setHeaderValue("Bearer");
+//                      config.setRole(Arrays.asList(Role.USER, Role.ADMIN));
+//                      f.filter(authorizationHeaderFilter.apply(config));
+//                      f.filter(queryParamFilter.apply(new QueryParamGatewayFilterFactory.Config()));
+//                      f.filter(queryParamRewriteFilter);
+//                      return f;
+//                    })
+//                    .uri("lb://USER/user/getUserInfo"))
             .route(p -> p
                     .path("/user/exists-email")
                     .filters(f -> f

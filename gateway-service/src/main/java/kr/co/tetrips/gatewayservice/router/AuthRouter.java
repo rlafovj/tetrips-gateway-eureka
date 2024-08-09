@@ -24,6 +24,7 @@ public class AuthRouter {
                     .GET("/getNickname", req -> req.headers().header("Authorization").stream().findFirst().map(authService::getNickname).orElseGet(authService::createResponseForEmpty))
                     .POST("/refresh", req -> req.headers().header("Authorization").stream().findFirst().map(authService::refreshToken).orElseGet(authService::createResponseForEmpty))
                     .POST("/logout", req -> req.headers().header("Authorization").stream().findFirst().map(authService::logout).orElseGet(authService::createResponseForEmpty))
+                    .GET("/getUserInfo", req -> req.headers().header("Authorization").stream().findFirst().map(authService::getUserInfo).orElseGet(authService::createResponseForEmpty))
             )
             .build();
   }

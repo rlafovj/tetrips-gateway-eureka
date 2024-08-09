@@ -166,4 +166,19 @@ public class AuthServiceImpl implements AuthService{
                     .bodyToMono(String.class)
             ).flatMap(i -> ServerResponse.ok().body(BodyInserters.fromValue(Collections.singletonMap("nickname", i))));
   }
+
+  @Override
+  public Mono<ServerResponse> getUserInfo(String accessToken) {
+    return Mono.just(accessToken)
+            .flatMap(i -> Mono.just(jwtProvider.removeBearer(accessToken)))
+            .filter(i -> jwtProvider.isTokenValid(accessToken, false))
+            .flatMap(i -> Mono.just(jwtProvider.extractEmail(i)))
+            .flatMap(i -> webClient.post()
+                    .uri("lb://USER/user/getUserInfo")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .bodyValue(Collections.singletonMap("email", i))
+                    .retrieve()
+                    .bodyToMono(UserDTO.class)
+            ).flatMap(i -> ServerResponse.ok().body(BodyInserters.fromValue(i)));
+  }
 }

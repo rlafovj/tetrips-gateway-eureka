@@ -13,4 +13,5 @@ public interface AuthService {
 
   Mono<ServerResponse> getNickname(String accessToken);
 
+  Mono<ServerResponse> getUserInfo(String accessToken);
 }

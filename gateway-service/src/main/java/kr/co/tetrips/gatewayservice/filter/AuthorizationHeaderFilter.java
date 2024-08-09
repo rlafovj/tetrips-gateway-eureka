@@ -9,6 +9,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
@@ -41,8 +42,16 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
   public GatewayFilter apply(Config config) {
     return ((exchange, chain) -> {
       log.info("Request URL: {}", exchange.getRequest().getURI());
+      if (exchange.getRequest().getMethod() == HttpMethod.OPTIONS) {
+        exchange.getResponse().getHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.getResponse().getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        exchange.getResponse().getHeaders().add("Access-Control-Allow-Headers", "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization");
+        exchange.getResponse().getHeaders().add("Access-Control-Expose-Headers", "Content-Length,Content-Range");
+        return chain.filter(exchange);
+      }
       if(!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION))
         return onError(exchange, HttpStatus.UNAUTHORIZED, "No Authorization Header");
+
 
       @SuppressWarnings("null")
       String token = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
